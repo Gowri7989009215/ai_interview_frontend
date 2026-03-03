@@ -47,10 +47,11 @@ export default function InterviewSetup() {
                 resumeId: form.resumeId
             });
             toast.success('Interview started! Good luck! 🎯');
+            const interviewId = data.interview._id || data.interview.id;
             if (form.mode === 'Coding') {
-                navigate(`/interview/${data.interview.id}/coding`);
+                navigate(`/interview/${interviewId}/coding`);
             } else {
-                navigate(`/interview/${data.interview.id}`);
+                navigate(`/interview/${interviewId}`);
             }
         } catch (err) {
             toast.error(err.response?.data?.message || 'Failed to start interview');

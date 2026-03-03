@@ -1,22 +1,27 @@
 import api from './api';
 
 export const interviewService = {
+    // Interviews
     startInterview: (data) => api.post('/interview/start', data),
     getInterview: (id) => api.get(`/interview/${id}`),
     getUserInterviews: () => api.get('/interview'),
+    getInterviewQuestions: (id) => api.get(`/interview/${id}/questions`),
     completeInterview: (id) => api.put(`/interview/${id}/complete`),
     flagAntiCheat: (id, data) => api.post(`/interview/${id}/flag`, data),
 
+    // Questions
     getNextQuestion: (data) => api.post('/questions/next', data),
-    getInterviewQuestions: (id) => api.get(`/questions/interview/${id}`),
 
+    // Answers
     submitAnswer: (data) => api.post('/answers/submit', data),
-    getInterviewAnswers: (id) => api.get(`/answers/interview/${id}`),
+    getInterviewAnswers: (id) => api.get(`/answers/${id}`),
 
+    // Reports
     generateReport: (interviewId) => api.post(`/reports/generate/${interviewId}`),
     getReport: (interviewId) => api.get(`/reports/${interviewId}`),
-    getUserReports: () => api.get('/reports'),
+    getUserReports: () => api.get('/reports/my'),
 
+    // Resume
     uploadResume: (formData) => api.post('/resume/upload', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
     }),
@@ -24,14 +29,14 @@ export const interviewService = {
     getResume: (id) => api.get(`/resume/${id}`),
     deleteResume: (id) => api.delete(`/resume/${id}`),
 
-    getCodingProblem: (level) => api.get(`/coding/problems?level=${level}`),
+    // Coding
+    getCodingProblem: (level) => api.get(`/coding/problem/${level}`),
     evaluateCodingSolution: (data) => api.post('/coding/evaluate', data),
 };
 
 export const adminService = {
     getStats: () => api.get('/admin/stats'),
-    getAllUsers: (page = 1) => api.get(`/admin/users?page=${page}`),
-    getUserDetails: (id) => api.get(`/admin/users/${id}`),
-    toggleUserStatus: (id) => api.put(`/admin/users/${id}/toggle`),
+    getAllUsers: () => api.get('/admin/users'),
     getAllInterviews: () => api.get('/admin/interviews'),
+    toggleUserStatus: (id) => api.patch(`/admin/users/${id}/toggle`),
 };
