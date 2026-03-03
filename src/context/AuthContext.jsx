@@ -8,6 +8,7 @@ export const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
     const [token, setToken] = useState(localStorage.getItem('token'));
 
+    // Attach token and fetch user on load
     useEffect(() => {
         if (token) {
             api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
@@ -17,35 +18,43 @@ export const AuthProvider = ({ children }) => {
         }
     }, [token]);
 
+    // Get logged-in user
     const fetchUser = async () => {
         try {
-            const { data } = await api.get('/auth/me');
+            const { data } = await api.get('/api/auth/me');
             setUser(data.user);
-        } catch {
+        } catch (error) {
             logout();
         } finally {
             setLoading(false);
         }
     };
 
+    // Login
     const login = async (email, password) => {
-        const { data } = await api.post('/auth/login', { email, password });
+        const { data } = await api.post('/api/auth/login', { email, password });
+
         localStorage.setItem('token', data.token);
         api.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
         setToken(data.token);
         setUser(data.user);
+
         return data;
     };
 
+    // Register
     const register = async (name, email, password) => {
-        const { data } = await api.post('/auth/register', { name, email, password });
+        const { data } = await api.post('/api/auth/register', { name, email, password });
+
         localStorage.setItem('token', data.token);
         api.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
         setToken(data.token);
         setUser(data.user);
+
         return data;
     };
 
+    // Logout
     const logout = () => {
         localStorage.removeItem('token');
         delete api.defaults.headers.common['Authorization'];
@@ -53,12 +62,23 @@ export const AuthProvider = ({ children }) => {
         setUser(null);
     };
 
+    // Update user locally
     const updateUser = (updatedUser) => {
         setUser(prev => ({ ...prev, ...updatedUser }));
     };
 
     return (
-        <AuthContext.Provider value={{ user, loading, token, login, register, logout, updateUser }}>
+        <AuthContext.Provider
+            value={{
+                user,
+                loading,
+                token,
+                login,
+                register,
+                logout,
+                updateUser
+            }}
+        >
             {children}
         </AuthContext.Provider>
     );
@@ -66,7 +86,9 @@ export const AuthProvider = ({ children }) => {
 
 export const useAuth = () => {
     const context = useContext(AuthContext);
-    if (!context) throw new Error('useAuth must be used within AuthProvider');
+    if (!context) {
+        throw new Error('useAuth must be used within AuthProvider');
+    }
     return context;
 };
 
